@@ -9,8 +9,14 @@ else
   then
     echo "Must run where Dockerfile exists"
   else
+    NO_CACHE=""
+    if [ "${1}" = "-f" -o "${1}" = "--no-cache" ]
+    then
+      NO_CACHE="--no-cache"
+      shift 1
+    fi
     echo "Building ManageIQ Docker Image for $DOCKER_NAMESPACE ..."
     oc login $(minishift ip):8443 -u developer -p developer
-    docker build . -t manageiq/manageiq-pods:$DOCKER_NAMESPACE
+    docker build ${NO_CACHE} . -t manageiq/manageiq-pods:$DOCKER_NAMESPACE
   fi
 fi

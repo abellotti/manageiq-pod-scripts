@@ -9,6 +9,12 @@ else
   then
     echo "Must run where Dockerfile exists"
   else
+    NO_CACHE=""
+    if [ "${1}" = "-f" -o "${1}" = "--no-cache" ]
+    then
+      NO_CACHE="--no-cache"
+      shift 1
+    fi
     LABEL_PREFIX=""
     DOCKERHUB_PUSH="no"
     if [ "${1}" = "-p" ]
@@ -21,7 +27,7 @@ else
     echo "Push to dockerhub: ${DOCKERHUB_PUSH}"
     oc login $(minishift ip):8443 -u developer -p developer
     TARGET="abellotti/httpd:${LABEL_PREFIX}latest"
-    docker build . -t $TARGET
+    docker build ${NO_CACHE} . -t $TARGET
     if [ $? -eq 0 -a $DOCKERHUB_PUSH="yes" ]
     then
       echo "Pushing to dockerhub @ $TARGET"
