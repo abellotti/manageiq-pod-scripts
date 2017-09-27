@@ -1,0 +1,32 @@
+if [ -z "$DOCKER_HOST" ]
+then
+  echo "Docker not setup on Minishift"
+elif [ -n "$(oc get pods | grep manageiq)" ]
+then
+  echo "ManageIQ Pods currently exist" 
+else
+  cd $HOME/pods
+  if [ ! -h templates ]
+  then
+    echo "Missing ManageIQ Pod templates symlink"
+  else
+    if [ "${1}" = "-f" ]
+    then
+      minishift-clean-pvs
+      create-pvs
+      create-template
+      set-service-accounts
+    fi
+    oc login $(minishift ip):8443 -u developer -p developer
+    oc new-app --template=manageiq -p APPLICATION_DOMAIN=ext-auth-rearch.aabtest.redhat.com
+
+    #
+    # For active_directory:
+    #
+    if [ -n "$(oc get routes | grep manageiq-ad)" ]
+    then
+      oc delete routes manageiq-ad
+    fi
+    oc create route edge manageiq-ad --service httpd --port http --hostname ext-auth-rearch.cloudforms.lab.eng.rdu2.redhat.com
+  fi
+fi

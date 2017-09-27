@@ -1,0 +1,31 @@
+if [ "$(minishift status)" != "Running" ]
+then
+  echo "Minishift is not running"
+else
+  if [ -z "$DOCKER_NAMESPACE" ]
+  then
+    echo "ManageIQ DOCKER_NAMESPACE is not defined"
+  elif [ ! -f Dockerfile ]
+  then
+    echo "Must run where Dockerfile exists"
+  else
+    LABEL_PREFIX="ext-auth"
+    DOCKERHUB_PUSH="no"
+    if [ "${1}" = "-p" ]
+    then
+      DOCKERHUB_PUSH="yes"
+      shift 1
+      [[ -n "${1}" ]] && LABEL_PREFIX="${1}"
+    fi
+    echo "Building ManageIQ Httpd Docker Image for $DOCKER_NAMESPACE ..."
+    echo "Push to dockerhub: ${DOCKERHUB_PUSH}"
+    oc login $(minishift ip):8443 -u developer -p developer
+    TARGET="abellotti/httpd:${LABEL_PREFIX}-latest"
+    docker build . -t $TARGET
+    if [ $? -eq 0 -a $DOCKERHUB_PUSH="yes" ]
+    then
+      echo "Pushing to dockerhub @ $TARGET"
+      docker push $TARGET
+    fi
+  fi
+fi
