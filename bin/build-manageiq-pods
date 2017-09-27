@@ -6,32 +6,34 @@ else
   then
     echo "Must run in the manageiq-pods images directory"
   else
-    LABEL_PREFIX="ext-auth"
+    LABEL_PREFIX=""
     DOCKERHUB_PUSH="no"
     if [ "${1}" = "-p" ]
     then
       DOCKERHUB_PUSH="yes"
       shift 1
-      [[ -n "${1}" ]] && LABEL_PREFIX="${1}"
+      [[ -n "${1}" ]] && LABEL_PREFIX="${1}-"
     fi
     echo "Building ManageIQ Docker Images ..."
     echo "Push to dockerhub: ${DOCKERHUB_PUSH} - Target label prefix ${LABEL_PREFIX}"
     oc login $(minishift ip):8443 -u developer -p developer
     cd miq-app
-    docker build . -t abellotti/manageiq-pods:${LABEL_PREFIX}-backend-latest
+     BACKEND_TARGET="abellotti/manageiq-pods:${LABEL_PREFIX}backend-latest"
+    FRONTEND_TARGET="abellotti/manageiq-pods:${LABEL_PREFIX}frontend-latest"
+    docker build . -t $BACKEND_TARGET
     if [ $? -eq 0 ]
     then
       if [ $DOCKERHUB_PUSH="yes" ]
       then
-        echo "Pushing to dockerhub @ abellotti/manageiq-pods:${LABEL_PREFIX}-backend-latest"
-        docker push abellotti/manageiq-pods:${LABEL_PREFIX}-backend-latest
+        echo "Pushing to dockerhub @ $BACKEND_TARGET"
+        docker push $BACKEND_TARGET
       fi
       cd ../miq-app-frontend
-      docker build . -t abellotti/manageiq-pods:${LABEL_PREFIX}-frontend-latest
+      docker build . -t $FRONTEND_TARGET
       if [ $? -eq 0 -a $DOCKERHUB_PUSH="yes" ]
       then
-        echo "Pushing to dockerhub @ abellotti/manageiq-pods:${LABEL_PREFIX}-frontend-latest"
-        docker push abellotti/manageiq-pods:${LABEL_PREFIX}-frontend-latest
+        echo "Pushing to dockerhub @ $FRONTEND_TARGET"
+        docker push $FRONTEND_TARGET
       fi
     fi
   fi
