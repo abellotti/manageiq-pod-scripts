@@ -1,1 +1,1 @@
-oc get pods | grep "httpd-" | cut -f1 -d" "
+oc get pods | egrep "httpd-[1-9]" | cut -f1 -d" "
