@@ -1,6 +1,6 @@
 PROJECT="ext-auth"
-PROJECT_DESCRIPTION="ManageIQ External Authentication Prototype"
-PROJECT_DISPLAYNAME="MiQ Ext-Auth Prototype"
+PROJECT_DESCRIPTION="ManageIQ External Authentication"
+PROJECT_DISPLAYNAME="MiQ Ext-Auth"
 minishift-start
 if [ -z "$(oc projects --short=true | grep $PROJECT)" ]
 then
