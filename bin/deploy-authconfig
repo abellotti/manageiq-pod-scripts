@@ -46,7 +46,6 @@ else
     fi
 
     oc login $(minishift ip):8443 -u developer -p developer
-    # Should not need -p APPLICATION_DOMAIN=ext-auth-rearch.aabtest.redhat.com for the authconfig.
-    oc new-app --template=manageiq-httpd-authconfig -p APPLICATION_DOMAIN=ext-auth-config.aabtest.redhat.com
+    oc new-app --template=manageiq-httpd-authconfig
   fi
 fi
