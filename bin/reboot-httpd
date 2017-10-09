@@ -7,7 +7,7 @@ then
 else
   oc login $(minishift ip):8443 -u developer -p developer
   echo "Scaling down httpd ..."
-  scale_httpd 0
+  scale-httpd 0
   echo "Waiting for scale down ..."
   while :
   do
@@ -18,5 +18,5 @@ else
     sleep 1
   done
   echo "Scaling up httpd ..."
-  scale_httpd 1
+  scale-httpd 1
 fi

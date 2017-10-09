@@ -1,6 +1,6 @@
 if [ -z "${1}" ]
 then
-  echo "Usage: scale_authconfig #_of_replicas  (0 to stop)"
+  echo "Usage: scale-authconfig #_of_replicas  (0 to stop)"
   exit 1
 fi
 oc scale dc httpd-authconfig --replicas=$1

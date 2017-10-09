@@ -9,6 +9,6 @@ else
     exit 1
   fi
   echo "Scaling up ManageIQ and httpd ..."
-  scale_miq 1
-  scale_httpd 1
+  scale-miq 1
+  scale-httpd 1
 fi
