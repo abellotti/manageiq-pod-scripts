@@ -4,7 +4,6 @@ then
 else
   echo "Killing PODs and PVs ..."
   oc login $(minishift ip):8443 -u developer -p developer
-  oc delete secret -l app=manageiq
   oc delete all -l app=manageiq
   oc delete secret -l app=manageiq
   oc login $(minishift ip):8443 -u system:admin
@@ -12,5 +11,5 @@ else
   oc login $(minishift ip):8443 -u developer -p developer
   oc delete pvc --all
   oc delete configmaps --all
-  oc delete pods --all
+  oc delete pods -l app-manageiq
 fi
