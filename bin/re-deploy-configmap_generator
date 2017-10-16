@@ -1,0 +1,13 @@
+echo "Killing Httpd Configmap Generator Pod ..."
+kill-pods-configmap_generator
+echo "Waiting for Pod removal ..."
+while :
+do
+  if [ -z "$(oc get pods 2>/dev/null | egrep 'httpd_configmap_generator')" ]
+  then
+    break
+  fi
+  sleep 1
+done
+echo "Deploying Httpd Configmap Generator ..."
+deploy-configmap_generator -f

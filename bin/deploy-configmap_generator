@@ -1,0 +1,51 @@
+if [ -z "$DOCKER_HOST" ]
+then
+  echo "Docker not setup on Minishift"
+elif [ -n "$(oc get pods | grep httpd_configmap_generator)" ]
+then
+  echo "ManageIQ Httpd Configmap Generator Pod currently exist" 
+else
+  cd $HOME/pods
+  if [ ! -d httpd_configmap_generator/templates ]
+  then
+    echo "Missing container-httpd ManageIQ Pod templates symlink"
+  else
+    TEMPLATE_DIR=`pwd`/httpd_configmap_generator/templates
+    export TEMPLATE_DIR
+
+    echo "TEMPLATE_DIR=${TEMPLATE_DIR}"
+
+    if [ "${1}" = "-f" ]
+    then
+      if [ -n "$(oc get templates | grep httpd_configmap_generator)" ]
+      then
+        echo "Deleting httpd_configmap_generator Template ..."
+        oc delete templates/httpd-configmap-generator
+      fi
+      
+      oc login $(minishift ip):8443 -u system:admin
+
+      if [ -n "$(oc get serviceaccounts | grep httpd-configmap-generator)" ]
+      then
+        echo "Deleting httpd-configmap-generator service account ..."
+        oc delete serviceaccounts/httpd-configmap-generator
+      fi
+
+      if [ ! -n "$(oc get scc | grep miq-sysadmin)" ]
+      then
+        echo "Creating miq-sysadmin SCC ..."
+        oc create -f $TEMPLATE_DIR/miq-scc-sysadmin.yaml
+      fi
+
+      echo "Setting miq-sysadmin SCC to user httpd-configmap-generator ..."
+      oc adm policy add-scc-to-user miq-sysadmin system:serviceaccount:$OC_PROJECT:httpd-configmap-generator
+      oc describe scc miq-sysadmin | grep Users
+      echo "Creating httpd-configmap-generator Template ..."
+      oc create -f $TEMPLATE_DIR/httpd-configmap-generator-template.yaml
+      oc login $(minishift ip):8443 -u developer -p developer
+    fi
+
+    oc login $(minishift ip):8443 -u developer -p developer
+    oc new-app --template=httpd-configmap-generator
+  fi
+fi

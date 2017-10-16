@@ -7,16 +7,16 @@ then
 else
   oc login $(minishift ip):8443 -u developer -p developer
   echo "Scaling down httpd ..."
-  scale-authconfig 0
+  scale-configmap_generator 0
   echo "Waiting for scale down ..."
   while :
   do
-    if [ -z "$(oc get pods 2>/dev/null | egrep 'httpd-authconfig')" ]
+    if [ -z "$(oc get pods 2>/dev/null | egrep 'httpd_configmap_generator')" ]
     then
       break
     fi
     sleep 1
   done
   echo "Scaling up httpd ..."
-  scale-authconfig 1
+  scale-configmap_generator 1
 fi

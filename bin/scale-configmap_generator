@@ -1,0 +1,6 @@
+if [ -z "${1}" ]
+then
+  echo "Usage: scale-configmap_generator #_of_replicas  (0 to stop)"
+  exit 1
+fi
+oc scale dc httpd_configmap_generator --replicas=$1
