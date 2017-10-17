@@ -1,7 +1,7 @@
 if [ -z "$DOCKER_HOST" ]
 then
   echo "Docker not setup on Minishift"
-elif [ -n "$(oc get pods | grep httpd_configmap_generator)" ]
+elif [ -n "$(oc get pods | grep httpd-configmap-generator)" ]
 then
   echo "ManageIQ Httpd Configmap Generator Pod currently exist" 
 else
@@ -17,9 +17,9 @@ else
 
     if [ "${1}" = "-f" ]
     then
-      if [ -n "$(oc get templates | grep httpd_configmap_generator)" ]
+      if [ -n "$(oc get templates | grep httpd-configmap-generator)" ]
       then
-        echo "Deleting httpd_configmap_generator Template ..."
+        echo "Deleting httpd-configmap-generator Template ..."
         oc delete templates/httpd-configmap-generator
       fi
       

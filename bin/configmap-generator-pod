@@ -1,0 +1,1 @@
+oc get pods | grep "httpd-configmap-generator" | cut -f1 -d" "

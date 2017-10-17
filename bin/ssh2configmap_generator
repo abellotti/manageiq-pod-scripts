@@ -1,2 +1,0 @@
-set -x
-oc rsh `configmap_generator_pod` bash -i

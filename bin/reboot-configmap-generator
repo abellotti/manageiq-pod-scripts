@@ -1,0 +1,22 @@
+if [ -z "$DOCKER_HOST" ]
+then
+  echo "Docker not setup on Minishift"
+elif [ -z "$(oc get pods | grep httpd-configmap-generator)" ]
+then
+  echo "ManageIQ httpd configmap generator does not currently exist" 
+else
+  oc login $(minishift ip):8443 -u developer -p developer
+  echo "Scaling down httpd ..."
+  scale-configmap-generator 0
+  echo "Waiting for scale down ..."
+  while :
+  do
+    if [ -z "$(oc get pods 2>/dev/null | egrep 'httpd-configmap-generator')" ]
+    then
+      break
+    fi
+    sleep 1
+  done
+  echo "Scaling up httpd configmap generator ..."
+  scale-configmap-generator 1
+fi

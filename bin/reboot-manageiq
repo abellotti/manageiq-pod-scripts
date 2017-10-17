@@ -12,7 +12,7 @@ else
   echo "Waiting for scale down ..."
   while :
   do
-    if [ -z "$(oc get pods 2>/dev/null | egrep -v 'httpd_configmap_generator' | egrep 'manageiq|httpd')" ]
+    if [ -z "$(oc get pods 2>/dev/null | egrep -v 'httpd-configmap-generator' | egrep 'manageiq|httpd')" ]
     then
       break
     fi
