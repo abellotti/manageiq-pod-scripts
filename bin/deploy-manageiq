@@ -18,15 +18,20 @@ else
       set-service-accounts
     fi
     oc login $(minishift ip):8443 -u developer -p developer
-    oc new-app --template=manageiq -p APPLICATION_DOMAIN=ext-auth-rearch.aabtest.redhat.com
+    if [ -z "${APPLICATION_DOMAIN}" ]
+    then
+      oc new-app --template=manageiq
+    else
+      oc new-app --template=manageiq -p APPLICATION_DOMAIN=$APPLICATION_DOMAIN
+    end
 
     #
     # For active_directory:
     #
-    if [ -n "$(oc get routes | grep manageiq-ad)" ]
-    then
-      oc delete routes manageiq-ad
-    fi
-    oc create route edge manageiq-ad --service httpd --port http --hostname ext-auth-rearch.cloudforms.lab.eng.rdu2.redhat.com
+    # if [ -n "$(oc get routes | grep manageiq-ad)" ]
+    # then
+    #   oc delete routes manageiq-ad
+    # fi
+    # oc create route edge manageiq-ad --service httpd --port http --hostname ext-auth-rearch.cloudforms.lab.eng.rdu2.redhat.com
   fi
 fi
