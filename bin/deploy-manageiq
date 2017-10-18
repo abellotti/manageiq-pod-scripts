@@ -26,12 +26,15 @@ else
     end
 
     #
-    # For active_directory:
+    # Alternate application domain and route:
     #
-    # if [ -n "$(oc get routes | grep manageiq-ad)" ]
-    # then
-    #   oc delete routes manageiq-ad
-    # fi
-    # oc create route edge manageiq-ad --service httpd --port http --hostname ext-auth-rearch.cloudforms.lab.eng.rdu2.redhat.com
+    if [ -n "${ALT_APPLICATION_DOMAIN}" -a -n "${ALT_APPLICATION_DOMAIN_ROUTE}" ]
+    then
+      if [ -n "$(oc get routes | grep ${ALT_APPLICATION_DOMAIN_ROUTE})" ]
+      then
+        oc delete routes ${ALT_APPLICATION_DOMAIN_ROUTE}
+      fi
+      oc create route edge ${ALT_APPLICATION_DOMAIN_ROUTE} --service httpd --port http --hostname ${ALT_APPLICATION_DOMAIN}
+    end
   fi
 fi
