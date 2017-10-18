@@ -1,0 +1,10 @@
+DEV_DIR=`pwd`
+cd $HOME/pods/bin
+if [ -z "$(echo $PATH | grep `pwd`)" ]
+then
+  echo "Updating PATH to include `pwd` ..."
+  export PATH=:$PATH:`pwd`
+fi
+. ./setup-docker
+cd $DEV_DIR
+oc project $OC_PROJECT
