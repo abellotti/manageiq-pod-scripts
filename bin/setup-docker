@@ -1,4 +1,4 @@
-if [ "$(minishift status)" != "Running" ]
+if [ "$(minishift-status)" != "Running" ]
 then
   echo "Minishift is not running"
 else

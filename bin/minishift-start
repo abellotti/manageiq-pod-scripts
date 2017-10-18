@@ -14,7 +14,7 @@ echo "Minishift Configuration:"
 echo "  Memory:  `minishift config get memory`"
 echo "  Cpus:    `minishift config get cpus`"
 echo "  Driver:  `minishift config get vm-driver`"
-if [ "$(minishift status)" != "Running" ]
+if [ "$(minishift-status)" != "Running" ]
 then
   echo "Starting Minishift ..."
   minishift start

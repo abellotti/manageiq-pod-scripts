@@ -1,0 +1,2 @@
+#!/bin/bash
+minishift status | sed s/"^Minishift:[[:space:]]*"// | head -1
