@@ -24,8 +24,8 @@ else
     echo "Push to dockerhub: ${DOCKERHUB_PUSH} - Target label prefix ${LABEL_PREFIX}"
     oc login $(minishift ip):8443 -u developer -p developer
     cd miq-app
-     BACKEND_TARGET="abellotti/manageiq-pods:${LABEL_PREFIX}backend-latest"
-    FRONTEND_TARGET="abellotti/manageiq-pods:${LABEL_PREFIX}frontend-latest"
+     BACKEND_TARGET="${DOCKERHUB_USERID}/manageiq-pods:${LABEL_PREFIX}backend-latest"
+    FRONTEND_TARGET="${DOCKERHUB_USERID}/manageiq-pods:${LABEL_PREFIX}frontend-latest"
     docker build ${NO_CACHE} . -t $BACKEND_TARGET
     if [ $? -eq 0 ]
     then

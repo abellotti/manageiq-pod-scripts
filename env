@@ -1,3 +1,4 @@
+DOCKERHUB_USERID="abellotti"
 DEV_DIR=`pwd`
 cd $HOME/pods/bin
 if [ -z "$(echo $PATH | grep `pwd`)" ]
