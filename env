@@ -1,7 +1,7 @@
-export DOCKERHUB_USERID="abellotti"
-export APPLICATION_DOMAIN="ext-auth-rearch.aabtest.redhat.com"
-export ALT_APPLICATION_DOMAIN="ext-auth-rearch.cloudforms.lab.eng.rdu2.redhat.com"
-export ALT_APPLICATION_DOMAIN_ROUTE="manageiq-ad"
+export DOCKERHUB_USERID=${DOCKERHUB_USERID:-abellotti}
+export APPLICATION_DOMAIN=${APPLICATION_DOMAIN:-ext-auth-rearch.aabtest.redhat.com}
+export ALT_APPLICATION_DOMAIN=${ALT_APPLICATION_DOMAIN:-ext-auth-rearch.cloudforms.lab.eng.rdu2.redhat.com}
+export ALT_APPLICATION_DOMAIN_ROUTE=${ALT_APPLICATION_DOMAIN_ROUTE:-manageiq-ad}
 
 DEV_DIR=`pwd`
 cd $HOME/pods/bin
