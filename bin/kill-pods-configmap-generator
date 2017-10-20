@@ -4,7 +4,6 @@ then
 else
   echo "Killing httpd-configmap-generator pods and resources ..."
   oc login $(minishift ip):8443 -u developer -p developer
-  oc delete secret -l app=httpd-configmap-generator
   oc delete all -l app=httpd-configmap-generator
   oc delete pods -l app=httpd-configmap-generator
 fi
