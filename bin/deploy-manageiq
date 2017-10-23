@@ -23,7 +23,7 @@ else
       oc new-app --template=manageiq
     else
       oc new-app --template=manageiq -p APPLICATION_DOMAIN=$APPLICATION_DOMAIN
-    end
+    fi
 
     #
     # Alternate application domain and route:
@@ -35,6 +35,6 @@ else
         oc delete routes ${ALT_APPLICATION_DOMAIN_ROUTE}
       fi
       oc create route edge ${ALT_APPLICATION_DOMAIN_ROUTE} --service httpd --port http --hostname ${ALT_APPLICATION_DOMAIN}
-    end
+    fi
   fi
 fi
