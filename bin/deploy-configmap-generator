@@ -31,15 +31,15 @@ else
         oc delete serviceaccounts/httpd-configmap-generator
       fi
 
-      if [ ! -n "$(oc get scc | grep miq-sysadmin)" ]
+      if [ ! -n "$(oc get scc | grep httpd-scc-sysadmin)" ]
       then
-        echo "Creating miq-sysadmin SCC ..."
-        oc create -f $TEMPLATE_DIR/miq-scc-sysadmin.yaml
+        echo "Creating httpd-scc-sysadmin SCC ..."
+        oc create -f $TEMPLATE_DIR/httpd-scc-sysadmin.yaml
       fi
 
-      echo "Setting miq-sysadmin SCC to user httpd-configmap-generator ..."
-      oc adm policy add-scc-to-user miq-sysadmin system:serviceaccount:$OC_PROJECT:httpd-configmap-generator
-      oc describe scc miq-sysadmin | grep Users
+      echo "Setting httpd-scc-sysadmin SCC to user httpd-configmap-generator ..."
+      oc adm policy add-scc-to-user httpd-scc-sysadmin system:serviceaccount:$OC_PROJECT:httpd-configmap-generator
+      oc describe scc httpd-scc-sysadmin | grep Users
       echo "Creating httpd-configmap-generator Template ..."
       oc create -f $TEMPLATE_DIR/httpd-configmap-generator-template.yaml
       oc login $(minishift ip):8443 -u developer -p developer
