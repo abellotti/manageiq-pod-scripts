@@ -3,7 +3,7 @@ kill-pods
 echo "Waiting for Pod removal ..."
 while :
 do
-  if [ -z "$(oc get pods 2>/dev/null)" ]
+  if [ -z "$(oc get pods --no-headers 2>/dev/null | egrep -v 'httpd-configmap-generator')" ]
   then
     break
   fi
