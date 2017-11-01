@@ -1,12 +1,12 @@
 # for aab-macbook
-# minishift config set memory 10240
-# minishift config set vm-driver vmwarefusion
-
-# for aab-openshift
-# minishift config set memory    24000
-# minishift config set cpus      2
-# minishift config set vm-driver kvm
-
+if [ "$(minishift config get vm-driver)" != "vmwarefusion" ]
+then
+  echo "Setting minishift defaults ..."
+  # default for minishift start --memory=10240 --cpu-count=2 --vm-driver=vmwarefusion
+  minishift config set memory    10240
+  minishift config set cpus      2
+  minishift config set vm-driver vmwarefusion
+fi
 
 # minishift openshift config set --patch '{"imagePolicyConfig": {"maxImagesBulkImportedPerRepository": 100}}'
 
@@ -17,13 +17,7 @@ echo "  Driver:  `minishift config get vm-driver`"
 if [ "$(minishift-status)" != "Running" ]
 then
   echo "Starting Minishift ..."
-  minishift start
+  minishift start --openshift-version v3.7.0-rc.0
 else
   echo "Minishift Running ..."
 fi
-# minishift start --memory=10240 --vm-driver=vmwarefusion
-# docker-machine options:
-# --vmwarefusion-cpu-count=1
-# --vmwarefusion-disk-size-count=20000
-# --vmwarefusion-memory-size=1024
-# --vmwarefusion-no-share=false
