@@ -1,0 +1,1 @@
+oc get pods | egrep "manageiq-[0-9]" | cut -f1 -d" "

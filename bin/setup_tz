@@ -1,5 +1,5 @@
 set -x
-HTTPD_POD=`httpdpod`
+HTTPD_POD=`httpd-pod`
 oc exec $HTTPD_POD -- mkdir -p /scripts
 oc cp   $REPO_DIR/scripts/common           $HTTPD_POD:/scripts/common
 oc rsh $HTTPD_POD bash /scripts/common/setup_tz

@@ -1,2 +1,2 @@
 set -x
-oc rsh `httpdpod` bash -i
+oc rsh `httpd-pod` bash -i

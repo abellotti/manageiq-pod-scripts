@@ -1,5 +1,5 @@
 set -x
-HTTPD_POD=`httpdpod`
+HTTPD_POD=`httpd-pod`
 TDIR="/scripts"
 oc exec $HTTPD_POD -- rm -rf ${TDIR}
 oc exec $HTTPD_POD -- mkdir -p ${TDIR}
