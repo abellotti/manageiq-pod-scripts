@@ -1,0 +1,11 @@
+if [ -z "${1}" ]
+then
+  echo "Usage: pod-logs <pod_name> | <pod>"
+  exit 1
+fi
+if [ -z $(which $1-pod) ]
+then
+  oc logs ${1}
+else
+  oc logs `${1}-pod`
+fi
