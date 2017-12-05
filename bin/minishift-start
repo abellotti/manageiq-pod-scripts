@@ -1,11 +1,11 @@
 # for aab-macbook
-if [ "$(minishift config get vm-driver)" != "vmwarefusion" ]
+if [ "$(minishift config get vm-driver)" != "${MINISHIFT_VM_DRIVER}" ]
 then
   echo "Setting minishift defaults ..."
-  # default for minishift start --memory=10240 --cpu-count=2 --vm-driver=vmwarefusion
+  # default for minishift start --memory=10240 --cpu-count=2 --vm-driver=${MINISHIFT_VM_DRIVER}
   minishift config set memory    10240
   minishift config set cpus      2
-  minishift config set vm-driver vmwarefusion
+  minishift config set vm-driver ${MINISHIFT_VM_DRIVER}
 fi
 
 # minishift openshift config set --patch '{"imagePolicyConfig": {"maxImagesBulkImportedPerRepository": 100}}'
