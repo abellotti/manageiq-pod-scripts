@@ -1,0 +1,112 @@
+cd $HOME/pods
+[ -z "$DOCKER_HOST" ]                  && echo "Docker not setup on Minishift"            && exit 1
+[ "$(minishift-status)" != "Running" ] && echo "Minishift is not running"                 && exit 1
+[ ! -h templates ]                     && echo "Missing CloudForms Pod templates symlink" && exit 1
+[ -z "$OC_PROJECT" ]                   && echo "ManageIQ OC_PROJECT is not defined"       && exit 1
+
+echo "Killing PODs and PVs ..."
+oc login $(minishift ip):8443 -u developer -p developer
+oc delete all -l app=cloudforms
+oc delete secret -l app=cloudforms
+oc login $(minishift ip):8443 -u system:admin
+oc delete pv --all
+oc login $(minishift ip):8443 -u developer -p developer
+oc delete pvc --all
+oc delete configmaps --all
+oc delete pods -l app=cloudforms
+
+echo "Waiting for Pod removal ..."
+while :
+do
+  if [ -z "$(oc get pods --no-headers 2>/dev/null | egrep -v 'httpd-configmap-generator')" ]
+  then
+    break
+  fi
+  sleep 1
+done
+
+echo "Deploying CloudForms ..."
+
+echo "Creating Minishift cloudforms pv directories ..."
+PV_DIR=/var/lib/minishift
+minishift ssh -- sudo mkdir -p ${PV_DIR}
+minishift ssh -- sudo rm -rf     ${PV_DIR}/cfme-app ${PV_DIR}/cfme-db
+minishift ssh -- sudo mkdir      ${PV_DIR}/cfme-app ${PV_DIR}/cfme-db
+minishift ssh -- sudo chmod 777  ${PV_DIR}/cfme-app ${PV_DIR}/cfme-db
+
+
+echo "Creating PV Templates ..."
+oc login $(minishift ip):8443 -u system:admin
+oc delete persistentvolume/cfme-db
+oc delete persistentvolume/cfme-app
+# oc delete templates/cloudforms-db-pv
+# oc delete templates/cloudforms-app-pv
+oc create -f $REPO_DIR/templates_deploy/cfme-pv-db.yaml
+oc create -f $REPO_DIR/templates_deploy/cfme-pv-server.yaml
+oc login $(minishift ip):8443 -u developer -p developer
+
+
+oc login $(minishift ip):8443 -u system:admin
+if [ -n "$(oc get templates | grep cloudforms)" ]
+then
+  echo "Deleting CloudForms Template ..."
+  oc delete templates/cloudforms
+fi
+if [ -n "$(oc get serviceaccounts | grep cfme-anyuid)" ]
+then
+  echo "Deleting cfme-anyuid service account ..."
+  oc delete serviceaccounts/cfme-anyuid
+fi
+if [ -n "$(oc get serviceaccounts | grep cfme-orchestrator)" ]
+then
+  echo "Deleting cfme-orchestrator service account ..."
+  oc delete serviceaccounts/cfme-orchestrator
+fi
+if [ -n "$(oc get serviceaccounts | grep cfme-privileged)" ]
+then
+  echo "Deleting cfme-privileged service account ..."
+  oc delete serviceaccounts/cfme-privileged
+fi
+if [ -n "$(oc get serviceaccounts | grep cfme-httpd)" ]
+then
+  echo "Deleting cfme-httpd service account ..."
+  oc delete serviceaccounts/cfme-httpd
+fi
+if [ -n "$(oc get scc | grep cfme-sysadmin)" ]
+then
+  echo "Deleting cfme-sysadmin SCC ..."
+  oc delete scc cfme-sysadmin
+fi
+echo "Creating cfme-sysadmin SCC ..."
+oc create -f templates/cfme-scc-sysadmin.yaml
+echo "Creating CloudForms Template ..."
+oc create -f templates/cfme-template.yaml
+oc login $(minishift ip):8443 -u developer -p developer
+
+
+echo "Setting Service Accounts policies for project $OC_PROJECT ..."
+oc login $(minishift ip):8443 -u system:admin
+oc adm policy add-scc-to-user anyuid system:serviceaccount:$OC_PROJECT:cfme-anyuid
+oc adm policy add-scc-to-user anyuid system:serviceaccount:$OC_PROJECT:cfme-orchestrator
+oc describe scc anyuid | grep Users
+
+oc adm policy add-scc-to-user privileged system:serviceaccount:$OC_PROJECT:cfme-privileged
+oc describe scc privileged | grep Users
+
+oc adm policy add-scc-to-user cfme-sysadmin system:serviceaccount:$OC_PROJECT:cfme-httpd
+oc describe scc cfme-sysadmin | grep Users
+
+oc login $(minishift ip):8443 -u developer -p developer
+
+oc policy add-role-to-user view system:serviceaccount:$OC_PROJECT:cfme-orchestrator -n $OC_PROJECT
+oc policy add-role-to-user edit system:serviceaccount:$OC_PROJECT:cfme-orchestrator -n $OC_PROJECT
+
+
+echo "Deploying CloudForms Application ..."
+oc login $(minishift ip):8443 -u developer -p developer
+if [ -z "${APPLICATION_DOMAIN}" ]
+then
+  oc new-app --template=cloudforms
+else
+  oc new-app --template=cloudforms -p APPLICATION_DOMAIN=$APPLICATION_DOMAIN
+fi
