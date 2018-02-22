@@ -17,7 +17,7 @@ echo "  Driver:  `minishift config get vm-driver`"
 if [ "$(minishift-status)" != "Running" ]
 then
   echo "Starting Minishift ..."
-  minishift start --openshift-version v3.7.0-rc.0
+  minishift start
 else
   echo "Minishift Running ..."
 fi
