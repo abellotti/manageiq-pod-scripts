@@ -17,8 +17,9 @@ objects:
       storage: "${PV_SIZE}"
     accessModes:
     - ReadWriteOnce
-    hostPath:
-      path: /var/lib/minishift/cfme-db
+    nfs:
+      path: "${BASE_PATH}/cfme-db"
+      server: "${NFS_HOST}"
     persistentVolumeReclaimPolicy: Retain
 parameters:
 - name: PV_SIZE

@@ -1,0 +1,18 @@
+#!/bin/bash
+[ -z "${REPO_DIR}" ] && echo "REPO_DIR must be defined" && exit 1
+[ -z "${1}" ] && echo "Usage: ${0} num_nfs_pvs" && exit 1
+
+oc login $(minishift ip):8443 -u system:admin
+
+NUM_PVS=${1}
+COUNTER=1
+TMP_NFS_TEMPLATE=/tmp/nfs_pvs_gen_template.yaml
+while [ $COUNTER -le $NUM_PVS ]; do
+  pv_cnt=$(printf "%04d" $COUNTER)
+  cat ${REPO_DIR}/templates_deploy/nfs_pvs_template.yaml | sed "s/\${PV}/pv$pv_cnt/" > $TMP_NFS_TEMPLATE
+  oc create -f $TMP_NFS_TEMPLATE
+  let COUNTER=COUNTER+1
+done
+
+oc login $(minishift ip):8443 -u developer -p developer
+

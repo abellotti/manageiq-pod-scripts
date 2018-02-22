@@ -27,20 +27,13 @@ done
 
 echo "Deploying CloudForms ..."
 
-echo "Creating Minishift cloudforms pv directories ..."
-PV_DIR=/var/lib/minishift
-minishift ssh -- sudo mkdir -p ${PV_DIR}
-minishift ssh -- sudo rm -rf     ${PV_DIR}/cfme-app ${PV_DIR}/cfme-db
-minishift ssh -- sudo mkdir      ${PV_DIR}/cfme-app ${PV_DIR}/cfme-db
-minishift ssh -- sudo chmod 777  ${PV_DIR}/cfme-app ${PV_DIR}/cfme-db
-
+echo "Creating Minishift cloudforms NFS PV's ..."
+create-nfs-pvs 10
 
 echo "Creating PV Templates ..."
 oc login $(minishift ip):8443 -u system:admin
-oc delete persistentvolume/cfme-db
-oc delete persistentvolume/cfme-app
-# oc delete templates/cloudforms-db-pv
-# oc delete templates/cloudforms-app-pv
+oc delete templates/cloudforms-db-pv
+oc delete templates/cloudforms-app-pv
 oc create -f $REPO_DIR/templates_deploy/cfme-pv-db.yaml
 oc create -f $REPO_DIR/templates_deploy/cfme-pv-server.yaml
 oc login $(minishift ip):8443 -u developer -p developer
